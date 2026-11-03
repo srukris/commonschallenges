@@ -174,16 +174,16 @@ function drawTabs(){
 }
 
 /* ---------- participant ---------- */
-const touched=s=>!!(s.h.trim()||(s.base?(s.q!==s.base.q||s.d!==s.base.d||s.c!==s.base.c):(s.q.trim()||s.d.trim()||s.c.trim())));
-const payload=()=>({g:me.g,sk:me.sk,sn:me.sn,desc:me.desc,steps:me.steps.map(s=>({gp:s.base?s.id:undefined,ph:s.ph,dm:s.dm,q:s.q,d:s.d,c:s.c,h:s.h,t:touched(s)}))});
+const touched=s=>!!(s.h.trim()||s.tech.trim()||(s.base?(s.q!==s.base.q||s.d!==s.base.d||s.c!==s.base.c):(s.q.trim()||s.d.trim()||s.c.trim())));
+const payload=()=>({g:me.g,sk:me.sk,sn:me.sn,desc:me.desc,steps:me.steps.map(s=>({gp:s.base?s.id:undefined,ph:s.ph,dm:s.dm,q:s.q,d:s.d,c:s.c,h:s.h,tech:s.tech,t:touched(s)}))});
 const dkey=()=>"dog-"+slug(me.g)+"-"+me.sk;
-function newGp(){return GP.map(s=>({id:s.id,no:s.no,ph:s.ph,dm:s.dm,q:s.q,d:s.d,c:s.c,h:"",base:{q:s.q,d:s.d,c:s.c}}))}
+function newGp(){return GP.map(s=>({id:s.id,no:s.no,ph:s.ph,dm:s.dm,q:s.q,d:s.d,c:s.c,h:"",tech:"",base:{q:s.q,d:s.d,c:s.c}}))}
 function applyStored(st){
   const steps=me.sk==="gpdp"?newGp():[];
   (st||[]).forEach((x,i)=>{
     const b=x.gp&&steps.find(s=>s.id===x.gp);
-    if(b){b.q=x.q;b.d=x.d;b.c=x.c;b.h=x.h}
-    else steps.push({id:"x"+Date.now()+"_"+i,ph:x.ph,dm:Number.isInteger(x.dm)?x.dm:(x.ph===0&&me.sk==="gpdp"?0:null),q:x.q||"",d:x.d||"",c:x.c||"",h:x.h||"",base:null});
+    if(b){b.q=x.q;b.d=x.d;b.c=x.c;b.h=x.h;b.tech=x.tech||""}
+    else steps.push({id:"x"+Date.now()+"_"+i,ph:x.ph,dm:Number.isInteger(x.dm)?x.dm:(x.ph===0&&me.sk==="gpdp"?0:null),q:x.q||"",d:x.d||"",c:x.c||"",h:x.h||"",tech:x.tech||"",base:null});
   });
   me.steps=steps;
 }
@@ -223,6 +223,7 @@ function stepHtml(s,n){
   return`<details class="card step" data-id="${s.id}" ${s.id===openId?"open":""}><summary><span class="num">${n}</span><span class="qt">${esc(s.q||"New step")}</span><span class="tick">${touched(s)?"✓":""}</span></summary><div class="body">
   <label>The question</label><textarea data-k="q" rows="2">${esc(s.q)}</textarea>
   <label>Data used</label><textarea data-k="d">${esc(s.d)}</textarea>
+  <label>Technology used</label><textarea data-k="tech" placeholder="Tools, software, platforms or devices you use at this step">${esc(s.tech)}</textarea>
   <label>Challenges</label><textarea data-k="c">${esc(s.c)}</textarea>
   <label class="hl">How do you address the challenges?</label><textarea data-k="h">${esc(s.h)}</textarea>
   ${s.base?"":`<p><button class="dng" data-rm="${s.id}">Remove this step</button></p>`}</div></details>`;
@@ -247,7 +248,7 @@ $("steps").addEventListener("click",e=>{
   me.steps=me.steps.filter(s=>s.id!==id);dirty=true;$("saved").textContent="Unsaved changes";drawPhase();
 });
 $("addstep").onclick=()=>{
-  const s={id:"x"+Date.now(),ph:curPh,dm:curDm,q:"",d:"",c:"",h:"",base:null};me.steps.push(s);openId=s.id;drawPhase();
+  const s={id:"x"+Date.now(),ph:curPh,dm:curDm,q:"",d:"",c:"",h:"",tech:"",base:null};me.steps.push(s);openId=s.id;drawPhase();
   const t=document.querySelector(`details[data-id="${s.id}"] textarea`);if(t)t.focus();
 };
 $("back").onclick=()=>{if(curDm!==null)drawGroups();else{drawOver();show("s-over")}};
@@ -303,7 +304,7 @@ function drawRes(){
   const t=T.find(x=>x.id===selT);if(!t)return;
   const inSc=i=>selSc==="all"||ent[i]?.sk===selSc;
   const chips=ids=>{const m={};ids.forEach(i=>{const e=ent[i];if(e)m[e.sk]=(m[e.sk]||0)+1});return Object.entries(m).map(([k,n])=>`<span class="chip" style="background:${scCol(k)}">${esc(sc.find(s=>s.key===k)?.name||k)} · ${n}</span>`).join("")};
-  const quote=e=>`<div class="cm"><span class="tag">${esc(e.sn)} · ${esc(e.g)} · ${esc(e.q)}</span><div><b>Challenge:</b> ${esc(e.c)||"–"}</div>${e.h?`<div><b>How addressed:</b> ${esc(e.h)}</div>`:""}</div>`;
+  const quote=e=>`<div class="cm"><span class="tag">${esc(e.sn)} · ${esc(e.g)} · ${esc(e.q)}</span>${e.tech?`<div><b>Technology:</b> ${esc(e.tech)}</div>`:""}<div><b>Challenge:</b> ${esc(e.c)||"–"}</div>${e.h?`<div><b>How addressed:</b> ${esc(e.h)}</div>`:""}</div>`;
   const aps=t.approaches.map(a=>({...a,e:a.entries.filter(inSc)})).filter(a=>a.e.length);
   const tIds=t.entries.filter(inSc);
   $("detail").innerHTML=`<h2>${esc(t.name)}</h2><p class="s">${esc(t.summary)}</p>
@@ -319,8 +320,8 @@ $("gen").onclick=async()=>{
   catch(e){toast("Could not start: "+e.message)}
 };
 $("csv").onclick=()=>{
-  const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"',rows=[["Scenario","Group","Phase","Question","Data used","Challenges","How addressed"]];
-  subs.forEach(s=>s.steps.filter(t=>t.t).forEach(t=>rows.push([s.sn,s.g,PHN[t.ph],t.q,t.d,t.c,t.h])));
+  const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"',rows=[["Scenario","Group","Phase","Question","Data used","Technology used","Challenges","How addressed"]];
+  subs.forEach(s=>s.steps.filter(t=>t.t).forEach(t=>rows.push([s.sn,s.g,PHN[t.ph],t.q,t.d,t.tech,t.c,t.h])));
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+rows.map(r=>r.map(q).join(",")).join("\n")],{type:"text/csv"}));a.download="data-on-the-ground-responses.csv";a.click();
 };
 $("clr").onclick=async()=>{
