@@ -26,6 +26,7 @@ export default async (req) => {
       const steps = b.steps.slice(0, 80).map((s) => ({
         gp: s.gp ? clip(s.gp, 10) : undefined,
         ph: [0, 1, 2].includes(Number(s.ph)) ? Number(s.ph) : 0,
+        dm: [0, 1, 2].includes(Number(s.dm)) ? Number(s.dm) : null,
         q: clip(s.q, 2000), d: clip(s.d, 2000), c: clip(s.c, 2000), h: clip(s.h, 3000), t: !!s.t,
       }));
       await subs.setJSON(slug(g) + "__" + sk, { g, sk, sn, desc: clip(b.desc, 600), steps, ts: Date.now() });
