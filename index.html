@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Data on the Ground</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&family=Space+Mono:wght@700&display=swap">
+<style>
+:root{--bg:#0b46c0;--fg:#fff;--mut:#e3eaff;--card:#d63f27;--deep:#072f80;--line:rgba(255,255,255,.4);--acc:#ffd23f;--accfg:#1b1340;--ink:#0b2a7a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:18px/1.55 Outfit,"Segoe UI",Arial,sans-serif}
+main{max-width:980px;margin:0 auto;padding:20px 16px 90px}
+h1,h2,h3{font-family:"Space Mono",ui-monospace,Menlo,Consolas,monospace;margin:0}
+h1{font-size:clamp(2.2rem,9vw,3.8rem);line-height:1.05;margin:6px 0 10px}
+h2{font-size:1.3rem;margin:0 0 10px}h3{font-size:1.05rem;margin:14px 0 6px}
+.kick{font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:.85rem;color:var(--acc)}
+.s{color:var(--mut);margin:0 0 12px}.tag{font-size:.88rem;color:var(--mut)}
+.card{background:var(--card);padding:18px;margin:14px 0}
+.card.deep{background:var(--deep)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+button,select,input,textarea{font:inherit;color:inherit}
+button{background:transparent;color:var(--fg);border:2px solid var(--fg);border-radius:999px;padding:7px 16px;cursor:pointer;font-weight:600}
+button.on{background:var(--fg);color:var(--bg)}
+button.pri{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
+button.dng{border-color:#ffb3a8;color:#ffd6d0}
+button:disabled{opacity:.5;cursor:default}
+input[type=text],input[type=password],textarea,select{width:100%;background:#fff;color:var(--ink);border:2px solid #fff;border-radius:0;padding:10px}
+textarea{min-height:84px;resize:vertical}
+label{display:block;font-weight:600;margin:12px 0 4px}
+label.hl{color:var(--acc)}
+.hide{display:none}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+@media(max-width:700px){.opts,.phs{grid-template-columns:1fr!important}}
+.opt{display:block;text-align:left;border-radius:0;padding:16px;font-weight:400;border-width:2px}
+.opt b{font-family:"Space Mono",monospace;display:block;font-size:1.05rem;margin-bottom:4px}
+.opt.on{background:#fff;color:var(--ink)}
+.phs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+.ph{border:0;border-radius:0;text-align:left;padding:20px;min-height:200px;display:flex;flex-direction:column;justify-content:space-between;font-weight:400}
+.ph .n{font-family:"Space Mono",monospace;font-size:3rem;line-height:1}
+.ph .t{font-family:"Space Mono",monospace;font-size:1.25rem;line-height:1.2;margin:8px 0}
+.p0{background:var(--card);color:#fff}.p1{background:var(--acc);color:var(--accfg)}.p2{background:#fff;color:var(--ink)}
+details.step{padding:0}
+details.step>summary{cursor:pointer;padding:14px 18px;list-style:none;display:flex;gap:10px;align-items:baseline;font-weight:600}
+details.step>summary::-webkit-details-marker{display:none}
+details.step .body{padding:0 18px 18px}
+.num{font-family:"Space Mono",monospace}.tick{margin-left:auto;color:var(--acc);white-space:nowrap}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--deep);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;z-index:5}
+.cm{border-top:1px solid var(--line);padding:10px 0;font-size:.95rem}.cm:first-child{border:0}
+.cm b{color:var(--acc)}
+.chip{display:inline-block;padding:1px 10px;border-radius:999px;font-size:.8rem;color:#1b1340;margin:2px 4px 2px 0;font-weight:600}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0}
+.stat{background:var(--card);padding:10px 16px}.stat b{display:block;font-family:"Space Mono",monospace;font-size:1.8rem;line-height:1.1}
+.brow{display:grid;grid-template-columns:minmax(120px,36%) 1fr 36px;gap:10px;align-items:center;padding:5px 6px;cursor:pointer;border:2px solid transparent}
+.brow.sel{border-color:var(--acc)}.brow .nm{font-size:.95rem;line-height:1.25}
+.track{background:rgba(255,255,255,.14);height:22px;display:flex}.seg{height:100%}
+.ht{overflow-x:auto}.ht table{border-collapse:collapse;min-width:520px;width:100%}
+.ht th{font-weight:600;font-size:.85rem;padding:4px 6px;text-align:center}.ht th.rl{text-align:left;min-width:150px;font-size:.9rem}
+.ht td{text-align:center;padding:0}
+.hc{display:block;width:100%;height:36px;line-height:36px;border:2px solid var(--deep);background:rgba(255,210,63,var(--a,0));color:#fff;font-weight:600;cursor:pointer;font-size:.95rem}
+.hc.sel{outline:3px solid #fff;outline-offset:-3px}
+.ap{border-left:4px solid var(--acc);padding:4px 0 4px 14px;margin:14px 0}
+.ap h3{margin:0 0 2px;font-size:1rem}
+details.q summary{cursor:pointer;color:var(--acc);font-size:.9rem;margin-top:4px}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:9px 16px;border-radius:20px;display:none;z-index:9}
+</style>
+</head>
+<body>
+<main>
+<div class="kick">ILDC workshop</div>
+<h1>Data on the Ground</h1>
+<div class="tabs" id="tabs"></div>
+
+<section id="play">
+  <div id="s-start">
+    <div class="card">
+      <label for="grp" style="margin-top:0">Your group name</label>
+      <input type="text" id="grp" placeholder="e.g. Group 3" autocomplete="off">
+      <div class="opts">
+        <button class="opt on" id="o-gp"><b>The GPDP scenario</b>Preparing the Annual Gram Panchayat Development Plan with the Commons agenda integrated into the plan. Steps are pre-filled for you to edit.</button>
+        <button class="opt" id="o-own"><b>A scenario of my own</b>Choose a decision you have worked on, and fill in every step yourself.</button>
+      </div>
+      <div id="ownf" class="hide">
+        <label for="sn">Name of your scenario</label>
+        <input type="text" id="sn" placeholder="e.g. Planning a community water-quality survey">
+        <label for="sd">What decision are you trying to make? (optional)</label>
+        <input type="text" id="sd">
+      </div>
+      <p style="margin:16px 0 0"><button class="pri" id="go">Start</button></p>
+    </div>
+  </div>
+
+  <div id="s-over" class="hide">
+    <p class="tag" id="who"></p>
+    <div class="phs" id="phs"></div>
+  </div>
+
+  <div id="s-phase" class="hide">
+    <p><button id="back">← All phases</button></p>
+    <h2 id="phtitle"></h2>
+    <div id="steps"></div>
+    <p><button id="addstep">+ Add a step</button></p>
+  </div>
+</section>
+
+<section id="login" class="hide">
+  <div class="card">
+    <h2>Facilitator sign-in</h2>
+    <label for="lpw" style="margin-top:0">Password</label>
+    <input type="password" id="lpw" autocomplete="current-password">
+    <p><button class="pri" id="lbtn">Sign in</button></p>
+  </div>
+</section>
+
+<section id="fac" class="hide">
+  <div class="card">
+    <h2>Responses so far</h2>
+    <div class="stats" id="stats"></div>
+    <div id="sclist"></div>
+    <p style="margin-top:14px"><button class="pri" id="gen">Analyse responses and build the view</button> <button id="csv">Download all responses (CSV)</button></p>
+    <p class="tag" id="stat"></p>
+  </div>
+  <div id="res" class="hide">
+    <div class="card deep">
+      <h2>Main challenges</h2>
+      <p class="s">How many worked-on steps raised each challenge, by scenario. Click a row to see how people handle it.</p>
+      <div class="leg" id="leg" style="margin-bottom:8px"></div>
+      <div id="bars"></div>
+    </div>
+    <div class="card deep">
+      <h2>Challenges across scenarios</h2>
+      <p class="s">Numbers match the challenge ranking above. Click a cell to focus on one scenario.</p>
+      <div class="ht" id="heat"></div>
+    </div>
+    <div class="card deep" id="detail"></div>
+  </div>
+  <p style="margin-top:24px"><button class="dng" id="clr">Clear all data…</button></p>
+</section>
+</main>
+<div class="bar hide" id="savebar"><span class="tag" id="saved"></span><button class="pri" id="save">Save my responses</button></div>
+<div id="toast" role="status"></div>
+<script>
+const GP=[{"id": "g1", "ph": 0, "q": "Understand the GP's demographic and livelihood profile", "d": "", "c": "Hard to link: different identifiers and reference years make integration difficult."}, {"id": "g2", "ph": 0, "q": "Map vulnerable households and habitations", "d": "NGO vulnerability assessments, community profiling studies", "c": "Scattered across departments VPRP data is available at Block NRLM. Hard to link: socio-economic datasets are rarely linked to planning datasets. Access to this data is limited. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g3", "ph": 0, "q": "Identify existing Commons within the GP", "d": "", "c": "Commons are named differently across revenue, forest, cadastral and community records. Five or more different datasets and sources are needed for this one step. Data can’t be linked: commons are classified differently across departments and datasets. Not all of the data is easy to locate."}, {"id": "g4", "ph": 0, "q": "Assess the current condition of the Commons", "d": "Project/ Study Reports of NGOs working in the same geography", "c": "Five or more different datasets and sources are needed for this one step. Hard to link: these datasets rarely align with GP boundaries. Not all of the data is easy to locate. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g5", "ph": 0, "q": "Assess social equity and inclusion in access to and use of Commons", "d": "Project/ Study Reports of NGOs working in the same geography", "c": "Data can’t be linked: equity and inclusion are not tracked as a distinct dataset anywhere. This data is not openly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g6", "ph": 0, "q": "Assess natural resource degradation hotspots", "d": "Remote sensing analyses, NGO landscape assessments", "c": "Data can’t be linked: environmental datasets are maintained separately. This data is only partly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g7", "ph": 0, "q": "Review ecosystem services and biodiversity values", "d": "", "c": "Limited and fragmented. Data can’t be linked: biodiversity data is rarely integrated with GP planning. Access to this data is limited."}, {"id": "g8", "ph": 0, "q": "Understand how Commons are used by the community", "d": "Project/ Study Reports of NGOs working in the same geography", "c": "Data can’t be linked: most information is collected manually or remains undocumented. This data is not openly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g9", "ph": 0, "q": "Understand conflict and contestation over Commons", "d": "NGO mediation case files, village-level conflict logs", "c": "Scattered; held informally in revenue and forest offices. Data can’t be linked: dispute records are not linked to Commons inventories or use data. This data is not openly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g10", "ph": 0, "q": "Identify governance and institutional arrangements", "d": "Project/ Study Reports of NGOs working in the same geography", "c": "Rarely digitised; scattered across departments or local records. Data can’t be linked: governance information is largely absent from existing public datasets. This data is not openly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g11", "ph": 0, "q": "Assess Panchayat's administrative and financial capacity", "d": "NGO institutional capacity assessments", "c": "Held within Panchayati Raj department, not consolidated publicly. Data can’t be linked: capacity data is not linked to scheme or investment datasets. This data is not openly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g12", "ph": 1, "q": "Assess climate and rainfall variability affecting the GP", "d": "Research institution climate models, NGO vulnerability assessments", "c": "Hard to link: climate datasets are not linked to livelihood or Commons datasets. Relies on data held by NGOs or communities, outside formal government systems. Available at block level; rarely downscaled to GP."}, {"id": "g13", "ph": 1, "q": "Analyse climate and disaster risks", "d": "Disaster risk assessments, NGO resilience studies", "c": "Available in different departments. Hard to link: hazard datasets are not integrated with local planning systems. This data is only partly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g14", "ph": 0, "q": "Review previous investments and ongoing schemes", "d": "", "c": "Five or more different datasets and sources are needed for this one step. Data exists but cannot be easily linked across schemes and programmes. Not all of the data is easy to locate."}, {"id": "g15", "ph": 2, "q": "Prioritise interventions for the coming year (along with the concerned GP)", "d": "", "c": "Needs manual synthesis of evidence from several sources; the data was built for reporting rather than for making this decision."}];
+const PHN=["Understand the status quo","Set goals for the future","Create a plan"];
+const PHD=["Where do things stand today?","Where do we want to get to?","What will we do, and in what order?"];
+const COLS=["#ffd23f","#5ef2c0","#ff8fb8","#c3b1ff","#ff9f43","#7fd1ff","#b6f23c","#ffffff"];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const slug=s=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,60)||"x";
+let tab="play",me=null,mode="gp",curPh=0,dirty=false,pw="",ok=false,subs=[],an=null,busy=false,jobErr="",selT=null,selSc="all",openId=null,dt=null;
+try{pw=sessionStorage.getItem("pw")||""}catch(e){}
+function toast(t){const e=$("toast");e.textContent=t;e.style.display="block";setTimeout(()=>e.style.display="none",3000)}
+async function api(path,opt={}){
+  const r=await fetch("/api/"+path,{...opt,headers:{"content-type":"application/json","x-admin-key":pw}});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok){const e=new Error(d.error||r.statusText);e.status=r.status;throw e}return d;
+}
+function drawTabs(){
+  const t=$("tabs");t.innerHTML="";
+  [["play","Participate"],["fac","Facilitator"]].forEach(([id,l])=>{const b=document.createElement("button");b.textContent=l;if(tab===id)b.className="on";b.onclick=()=>{tab=id;drawTabs()};t.appendChild(b)});
+  $("play").classList.toggle("hide",tab!=="play");
+  $("login").classList.toggle("hide",!(tab==="fac"&&!ok));
+  $("fac").classList.toggle("hide",!(tab==="fac"&&ok));
+  $("savebar").classList.toggle("hide",!(tab==="play"&&me));
+  if(tab==="fac"&&ok)drawFac();
+}
+
+/* ---------- participant ---------- */
+const touched=s=>!!(s.h.trim()||(s.base?(s.q!==s.base.q||s.d!==s.base.d||s.c!==s.base.c):(s.q.trim()||s.d.trim()||s.c.trim())));
+const payload=()=>({g:me.g,sk:me.sk,sn:me.sn,desc:me.desc,steps:me.steps.map(s=>({gp:s.base?s.id:undefined,ph:s.ph,q:s.q,d:s.d,c:s.c,h:s.h,t:touched(s)}))});
+const dkey=()=>"dog-"+slug(me.g)+"-"+me.sk;
+function newGp(){return GP.map(s=>({id:s.id,ph:s.ph,q:s.q,d:s.d,c:s.c,h:"",base:{q:s.q,d:s.d,c:s.c}}))}
+function applyStored(st){
+  const steps=me.sk==="gpdp"?newGp():[];
+  (st||[]).forEach((x,i)=>{
+    const b=x.gp&&steps.find(s=>s.id===x.gp);
+    if(b){b.q=x.q;b.d=x.d;b.c=x.c;b.h=x.h}
+    else steps.push({id:"x"+Date.now()+"_"+i,ph:x.ph,q:x.q||"",d:x.d||"",c:x.c||"",h:x.h||"",base:null});
+  });
+  me.steps=steps;
+}
+$("o-gp").onclick=()=>{mode="gp";$("o-gp").classList.add("on");$("o-own").classList.remove("on");$("ownf").classList.add("hide")};
+$("o-own").onclick=()=>{mode="own";$("o-own").classList.add("on");$("o-gp").classList.remove("on");$("ownf").classList.remove("hide")};
+try{const g=localStorage.getItem("grp");if(g)$("grp").value=g}catch(e){}
+$("go").onclick=async()=>{
+  const g=$("grp").value.trim(),sn=$("sn").value.trim();
+  if(!g){toast("Please enter your group name");return}
+  if(mode==="own"&&!sn){toast("Please name your scenario");return}
+  try{localStorage.setItem("grp",g)}catch(e){}
+  me={g,sk:mode==="gp"?"gpdp":"c-"+slug(sn),sn:mode==="gp"?"GPDP scenario":sn,desc:$("sd").value.trim(),steps:[]};
+  let st=null;
+  try{const r=await api("mine?g="+encodeURIComponent(g)+"&sk="+(mode==="gp"?"gpdp":"c")+"&sn="+encodeURIComponent(me.sn));st=r.submission?.steps;if(st&&r.submission.desc&&!me.desc)me.desc=r.submission.desc}catch(e){}
+  if(!st){try{const d=localStorage.getItem(dkey());if(d)st=JSON.parse(d)}catch(e){}}
+  applyStored(st);
+  if(st)toast("Welcome back. Your earlier answers are loaded.");
+  dirty=false;show("s-over");drawOver();drawTabs();
+};
+function show(id){["s-start","s-over","s-phase"].forEach(x=>$(x).classList.toggle("hide",x!==id));window.scrollTo(0,0)}
+function drawOver(){
+  $("who").innerHTML=`<b>${esc(me.g)}</b> · ${esc(me.sn)} · <a href="#" id="chg" style="color:var(--acc)">change</a>`;
+  $("chg").onclick=e=>{e.preventDefault();if(dirty&&!confirm("You have unsaved changes. Leave anyway?"))return;me=null;show("s-start");drawTabs()};
+  $("phs").innerHTML=PHN.map((n,i)=>{const st=me.steps.filter(s=>s.ph===i),f=st.filter(touched).length;
+    return`<button class="ph p${i}" data-p="${i}"><div><div class="n">${i+1}</div><div class="t">${n}</div><div>${PHD[i]}</div></div><div style="margin-top:14px;font-weight:600">${st.length} step${st.length===1?"":"s"} · ${f} worked on</div></button>`}).join("");
+  $("phs").querySelectorAll(".ph").forEach(b=>b.onclick=()=>{curPh=+b.dataset.p;drawPhase()});
+}
+function stepHtml(s,n){
+  return`<details class="card step" data-id="${s.id}" ${s.id===openId?"open":""}><summary><span class="num">${n}</span><span class="qt">${esc(s.q||"New step")}</span><span class="tick">${touched(s)?"✓":""}</span></summary><div class="body">
+  <label>The question</label><textarea data-k="q" rows="2">${esc(s.q)}</textarea>
+  <label>Data used</label><textarea data-k="d">${esc(s.d)}</textarea>
+  <label>Challenges</label><textarea data-k="c">${esc(s.c)}</textarea>
+  <label class="hl">How do you address the challenges?</label><textarea data-k="h">${esc(s.h)}</textarea>
+  ${s.base?"":`<p><button class="dng" data-rm="${s.id}">Remove this step</button></p>`}</div></details>`;
+}
+function drawPhase(){
+  $("phtitle").textContent=(curPh+1)+". "+PHN[curPh];
+  const st=me.steps.filter(s=>s.ph===curPh);
+  $("steps").innerHTML=st.length?st.map((s,i)=>stepHtml(s,i+1)).join(""):`<p class="tag">No steps yet. Add the first one below.</p>`;
+  show("s-phase");
+}
+$("steps").addEventListener("input",e=>{
+  const k=e.target.dataset.k;if(!k)return;
+  const d=e.target.closest("details"),s=me.steps.find(x=>x.id===d.dataset.id);s[k]=e.target.value;
+  d.querySelector(".tick").textContent=touched(s)?"✓":"";
+  if(k==="q")d.querySelector(".qt").textContent=s.q||"New step";
+  dirty=true;$("saved").textContent="Unsaved changes";
+  clearTimeout(dt);dt=setTimeout(()=>{try{localStorage.setItem(dkey(),JSON.stringify(payload().steps))}catch(e){}},600);
+});
+$("steps").addEventListener("click",e=>{
+  const id=e.target.dataset.rm;if(!id)return;
+  if(!confirm("Remove this step?"))return;
+  me.steps=me.steps.filter(s=>s.id!==id);dirty=true;$("saved").textContent="Unsaved changes";drawPhase();
+});
+$("addstep").onclick=()=>{
+  const s={id:"x"+Date.now(),ph:curPh,q:"",d:"",c:"",h:"",base:null};me.steps.push(s);openId=s.id;drawPhase();
+  const t=document.querySelector(`details[data-id="${s.id}"] textarea`);if(t)t.focus();
+};
+$("back").onclick=()=>{drawOver();show("s-over")};
+$("save").onclick=async()=>{
+  const b=$("save");b.disabled=true;
+  try{await api("submit",{method:"POST",body:JSON.stringify(payload())});dirty=false;
+    $("saved").textContent="Saved at "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});toast("Saved. Thank you!")}
+  catch(e){toast("Could not save: "+e.message)}
+  b.disabled=false;
+};
+window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue=""}});
+
+/* ---------- facilitator ---------- */
+async function refresh(){
+  const[s,a]=await Promise.all([api("admin/submissions"),api("admin/analysis")]);
+  subs=s.submissions;an=a.analysis;busy=a.job?.state==="running";jobErr=a.job?.state==="error"?a.job.error:"";
+}
+$("lbtn").onclick=async()=>{
+  pw=$("lpw").value;
+  try{await refresh();ok=true;try{sessionStorage.setItem("pw",pw)}catch(e){}drawTabs()}
+  catch(e){toast(e.status===401?"Wrong password":"Could not sign in: "+e.message)}
+};
+$("lpw").addEventListener("keydown",e=>{if(e.key==="Enter")$("lbtn").click()});
+function scList(){
+  const m={};subs.forEach(s=>{const x=m[s.sk]||={key:s.sk,name:s.sn,groups:new Set(),steps:0};x.groups.add(s.g);x.steps+=s.steps.filter(t=>t.t).length});
+  return Object.values(m).sort((a,b)=>a.key==="gpdp"?-1:b.key==="gpdp"?1:b.groups.size-a.groups.size);
+}
+const scCol=key=>{const l=(an?.scenarios||[]).map(s=>s.key);const k=l.indexOf(key);return COLS[(k<0?0:k)%COLS.length]};
+function drawFac(){
+  const L=scList(),gs=new Set(subs.map(s=>s.g)),ts=subs.reduce((n,s)=>n+s.steps.filter(t=>t.t).length,0);
+  $("stats").innerHTML=[[gs.size,"groups"],[L.length,"scenarios"],[ts,"steps worked on"]].map(x=>`<div class="stat"><b>${x[0]}</b>${x[1]}</div>`).join("");
+  $("sclist").innerHTML=L.map(s=>`<div class="cm"><b>${esc(s.name)}</b> <span class="tag">${s.groups.size} group${s.groups.size===1?"":"s"} · ${s.steps} steps worked on</span></div>`).join("")||`<p class="tag">Nothing yet.</p>`;
+  $("gen").disabled=busy;
+  const stale=an&&an.n!==subs.length;
+  $("stat").textContent=busy?"Reading the responses and grouping the challenges… this can take a few minutes. You can leave this page open.":(jobErr?"Last analysis failed: "+jobErr+" ":"")+(stale?"The view was built from "+an.n+" saved submissions; there are "+subs.length+" now, so you may want to rebuild it.":"");
+  $("res").classList.toggle("hide",!an);
+  if(an)drawRes();
+}
+function drawRes(){
+  const ent={};an.entries.forEach(e=>ent[e.i]=e);
+  const T=an.themes.map(t=>({...t,n:t.entries.length})).sort((a,b)=>b.n-a.n);
+  if(!selT||!T.find(t=>t.id===selT))selT=T[0]?.id;
+  const max=T[0]?.n||1,sc=an.scenarios;
+  $("leg").innerHTML=sc.map(s=>`<span class="chip" style="background:${scCol(s.key)}">${esc(s.name)}</span>`).join("");
+  $("bars").innerHTML=T.map((t,r)=>{
+    const segs=sc.map(s=>({s,n:t.entries.filter(i=>ent[i]?.sk===s.key).length})).filter(x=>x.n);
+    return`<div class="brow ${t.id===selT?"sel":""}" data-t="${t.id}"><div class="nm"><b>${r+1}.</b> ${esc(t.name)}</div><div class="track">${segs.map(x=>`<div class="seg" title="${esc(x.s.name)}: ${x.n}" style="width:${x.n/max*100}%;background:${scCol(x.s.key)}"></div>`).join("")}</div><b>${t.n}</b></div>`}).join("");
+  $("bars").querySelectorAll(".brow").forEach(b=>b.onclick=()=>{selT=b.dataset.t;selSc="all";drawRes();$("detail").scrollIntoView({behavior:"smooth",block:"nearest"})});
+  let mx=1;const cell=(t,s)=>t.entries.filter(i=>ent[i]?.sk===s.key).length;
+  T.forEach(t=>sc.forEach(s=>mx=Math.max(mx,cell(t,s))));
+  $("heat").innerHTML=`<table><thead><tr><th class="rl">Scenario</th>${T.map((t,r)=>`<th title="${esc(t.name)}">${r+1}</th>`).join("")}</tr></thead><tbody>${sc.map(s=>`<tr><th class="rl"><i class="chip" style="background:${scCol(s.key)};padding:0 6px">&nbsp;</i> ${esc(s.name)}</th>${T.map(t=>{const n=cell(t,s);return`<td><button class="hc ${t.id===selT&&selSc===s.key?"sel":""}" style="--a:${n?(.18+.82*n/mx).toFixed(2):0}" data-t="${t.id}" data-s="${s.key}" title="${esc(t.name)} · ${esc(s.name)}">${n||""}</button></td>`}).join("")}</tr>`).join("")}</tbody></table>`;
+  $("heat").querySelectorAll(".hc").forEach(b=>b.onclick=()=>{selT=b.dataset.t;selSc=b.dataset.s;drawRes();$("detail").scrollIntoView({behavior:"smooth",block:"nearest"})});
+  const t=T.find(x=>x.id===selT);if(!t)return;
+  const inSc=i=>selSc==="all"||ent[i]?.sk===selSc;
+  const chips=ids=>{const m={};ids.forEach(i=>{const e=ent[i];if(e)m[e.sk]=(m[e.sk]||0)+1});return Object.entries(m).map(([k,n])=>`<span class="chip" style="background:${scCol(k)}">${esc(sc.find(s=>s.key===k)?.name||k)} · ${n}</span>`).join("")};
+  const quote=e=>`<div class="cm"><span class="tag">${esc(e.sn)} · ${esc(e.g)} · ${esc(e.q)}</span><div><b>Challenge:</b> ${esc(e.c)||"–"}</div>${e.h?`<div><b>How addressed:</b> ${esc(e.h)}</div>`:""}</div>`;
+  const aps=t.approaches.map(a=>({...a,e:a.entries.filter(inSc)})).filter(a=>a.e.length);
+  const tIds=t.entries.filter(inSc);
+  $("detail").innerHTML=`<h2>${esc(t.name)}</h2><p class="s">${esc(t.summary)}</p>
+  <label for="dsc" style="margin-top:0">Show</label><select id="dsc"><option value="all">All scenarios</option>${sc.map(s=>`<option value="${esc(s.key)}" ${s.key===selSc?"selected":""}>${esc(s.name)}</option>`).join("")}</select>
+  <p style="margin:10px 0 0">${chips(tIds)}</p>
+  <h3>How people address it</h3>
+  ${aps.length?aps.map(a=>`<div class="ap"><h3>${esc(a.title)}</h3><div>${esc(a.summary)}</div><div>${chips(a.e)}</div><details class="q"><summary>Participants’ words (${a.e.length})</summary>${a.e.slice(0,30).map(i=>ent[i]?quote(ent[i]):"").join("")}</details></div>`).join(""):`<p class="tag">No one has described a way of handling this${selSc==="all"?"":" in this scenario"} yet.</p>`}
+  <details class="q"><summary>All responses raising this challenge (${tIds.length})</summary>${tIds.slice(0,60).map(i=>ent[i]?quote(ent[i]):"").join("")}</details>`;
+  $("dsc").onchange=e=>{selSc=e.target.value;drawRes()};
+}
+$("gen").onclick=async()=>{
+  try{await api("admin/analyse",{method:"POST",body:"{}"});busy=true;jobErr="";drawFac()}
+  catch(e){toast("Could not start: "+e.message)}
+};
+$("csv").onclick=()=>{
+  const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"',rows=[["Scenario","Group","Phase","Question","Data used","Challenges","How addressed"]];
+  subs.forEach(s=>s.steps.filter(t=>t.t).forEach(t=>rows.push([s.sn,s.g,PHN[t.ph],t.q,t.d,t.c,t.h])));
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+rows.map(r=>r.map(q).join(",")).join("\n")],{type:"text/csv"}));a.download="data-on-the-ground-responses.csv";a.click();
+};
+$("clr").onclick=async()=>{
+  if(prompt("This deletes ALL responses and the analysis. Type CLEAR to confirm.")!=="CLEAR")return;
+  try{await api("admin/clear",{method:"POST",body:JSON.stringify({confirm:"CLEAR"})});await refresh();selT=null;drawFac();toast("All data cleared")}catch(e){toast("Could not clear: "+e.message)}
+};
+
+drawTabs();
+if(pw)refresh().then(()=>{ok=true;drawTabs()}).catch(()=>{});
+setInterval(async()=>{if(tab==="fac"&&ok){try{await refresh();drawFac()}catch(e){}}},8000);
+</script>
+</body>
+</html>
