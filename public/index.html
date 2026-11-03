@@ -95,6 +95,12 @@ details.q summary{cursor:pointer;color:var(--acc);font-size:.9rem;margin-top:4px
     <div class="phs" id="phs"></div>
   </div>
 
+  <div id="s-grp" class="hide">
+    <p><button id="gback">← All phases</button></p>
+    <h2 id="gtitle"></h2>
+    <div class="phs" id="grps"></div>
+  </div>
+
   <div id="s-phase" class="hide">
     <p><button id="back">← All phases</button></p>
     <h2 id="phtitle"></h2>
@@ -140,14 +146,16 @@ details.q summary{cursor:pointer;color:var(--acc);font-size:.9rem;margin-top:4px
 <div class="bar hide" id="savebar"><span class="tag" id="saved"></span><button class="pri" id="save">Save my responses</button></div>
 <div id="toast" role="status"></div>
 <script>
-const GP=[{"id": "g1", "ph": 0, "q": "Understand the GP's demographic and livelihood profile", "d": "", "c": "Hard to link: different identifiers and reference years make integration difficult."}, {"id": "g2", "ph": 0, "q": "Map vulnerable households and habitations", "d": "NGO vulnerability assessments, community profiling studies", "c": "Scattered across departments VPRP data is available at Block NRLM. Hard to link: socio-economic datasets are rarely linked to planning datasets. Access to this data is limited. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g3", "ph": 0, "q": "Identify existing Commons within the GP", "d": "", "c": "Commons are named differently across revenue, forest, cadastral and community records. Five or more different datasets and sources are needed for this one step. Data can’t be linked: commons are classified differently across departments and datasets. Not all of the data is easy to locate."}, {"id": "g4", "ph": 0, "q": "Assess the current condition of the Commons", "d": "Project/ Study Reports of NGOs working in the same geography", "c": "Five or more different datasets and sources are needed for this one step. Hard to link: these datasets rarely align with GP boundaries. Not all of the data is easy to locate. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g5", "ph": 0, "q": "Assess social equity and inclusion in access to and use of Commons", "d": "Project/ Study Reports of NGOs working in the same geography", "c": "Data can’t be linked: equity and inclusion are not tracked as a distinct dataset anywhere. This data is not openly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g6", "ph": 0, "q": "Assess natural resource degradation hotspots", "d": "Remote sensing analyses, NGO landscape assessments", "c": "Data can’t be linked: environmental datasets are maintained separately. This data is only partly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g7", "ph": 0, "q": "Review ecosystem services and biodiversity values", "d": "", "c": "Limited and fragmented. Data can’t be linked: biodiversity data is rarely integrated with GP planning. Access to this data is limited."}, {"id": "g8", "ph": 0, "q": "Understand how Commons are used by the community", "d": "Project/ Study Reports of NGOs working in the same geography", "c": "Data can’t be linked: most information is collected manually or remains undocumented. This data is not openly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g9", "ph": 0, "q": "Understand conflict and contestation over Commons", "d": "NGO mediation case files, village-level conflict logs", "c": "Scattered; held informally in revenue and forest offices. Data can’t be linked: dispute records are not linked to Commons inventories or use data. This data is not openly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g10", "ph": 0, "q": "Identify governance and institutional arrangements", "d": "Project/ Study Reports of NGOs working in the same geography", "c": "Rarely digitised; scattered across departments or local records. Data can’t be linked: governance information is largely absent from existing public datasets. This data is not openly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g11", "ph": 0, "q": "Assess Panchayat's administrative and financial capacity", "d": "NGO institutional capacity assessments", "c": "Held within Panchayati Raj department, not consolidated publicly. Data can’t be linked: capacity data is not linked to scheme or investment datasets. This data is not openly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g12", "ph": 1, "q": "Assess climate and rainfall variability affecting the GP", "d": "Research institution climate models, NGO vulnerability assessments", "c": "Hard to link: climate datasets are not linked to livelihood or Commons datasets. Relies on data held by NGOs or communities, outside formal government systems. Available at block level; rarely downscaled to GP."}, {"id": "g13", "ph": 1, "q": "Analyse climate and disaster risks", "d": "Disaster risk assessments, NGO resilience studies", "c": "Available in different departments. Hard to link: hazard datasets are not integrated with local planning systems. This data is only partly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g14", "ph": 0, "q": "Review previous investments and ongoing schemes", "d": "", "c": "Five or more different datasets and sources are needed for this one step. Data exists but cannot be easily linked across schemes and programmes. Not all of the data is easy to locate."}, {"id": "g15", "ph": 2, "q": "Prioritise interventions for the coming year (along with the concerned GP)", "d": "", "c": "Needs manual synthesis of evidence from several sources; the data was built for reporting rather than for making this decision."}];
+const GP=[{"id": "g1", "no": 1, "ph": 0, "dm": 1, "q": "Understand the GP's demographic and livelihood profile", "d": "Population Census, SECC (where relevant), GPDP baseline", "c": "Hard to link: different identifiers and reference years make integration difficult."}, {"id": "g2", "no": 2, "ph": 0, "dm": 1, "q": "Map vulnerable households and habitations", "d": "PVTG/SC/ST habitation data, poverty indicators, service access gaps, VPRP data\nOther data that could help: NGO vulnerability assessments, community profiling studies", "c": "Scattered across departments VPRP data is available at Block NRLM. Hard to link: socio-economic datasets are rarely linked to planning datasets. Access to this data is limited. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g3", "no": 3, "ph": 0, "dm": 0, "q": "Identify existing Commons within the GP", "d": "Revenue land records, village cadastral maps, Bhuvan land use, waterbody inventories, MGNREGA asset register\nOther data that could help: CoRE Stack's datasets on Commons", "c": "Commons are named differently across revenue, forest, cadastral and community records. Five or more different datasets and sources are needed for this one step. Data can’t be linked: commons are classified differently across departments and datasets. Not all of the data is easy to locate."}, {"id": "g4", "no": 4, "ph": 0, "dm": 0, "q": "Assess the current condition of the Commons", "d": "Land Use/Land Cover, groundwater data, rainfall, watershed maps, waterbody data\nOther data that could help: Project/ Study Reports of NGOs working in the same geography", "c": "Five or more different datasets and sources are needed for this one step. Hard to link: these datasets rarely align with GP boundaries. Not all of the data is easy to locate. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g5", "no": 5, "ph": 0, "dm": 1, "q": "Assess social equity and inclusion in access to and use of Commons", "d": "Caste/tribe-disaggregated household data, women's attendance and speaking roles in Gram Sabha, records of disputes involving marginalised households\nOther data that could help: Project/ Study Reports of NGOs working in the same geography", "c": "Data can’t be linked: equity and inclusion are not tracked as a distinct dataset anywhere. This data is not openly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g6", "no": 6, "ph": 0, "dm": 0, "q": "Assess natural resource degradation hotspots", "d": "Soil erosion maps, forest degradation data, gully locations, mining impact records\nOther data that could help: Remote sensing analyses, NGO landscape assessments", "c": "Data can’t be linked: environmental datasets are maintained separately. This data is only partly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g7", "no": 7, "ph": 0, "dm": 0, "q": "Review ecosystem services and biodiversity values", "d": "Biodiversity registers, species occurrence records, ecosystem service assessments\nOther data that could help: People's Biodiversity Registers, ecological studies", "c": "Limited and fragmented. Data can’t be linked: biodiversity data is rarely integrated with GP planning. Access to this data is limited."}, {"id": "g8", "no": 8, "ph": 0, "dm": 1, "q": "Understand how Commons are used by the community", "d": "Household surveys, participatory resource mapping, Gram Sabha records, PRA exercises\nOther data that could help: Project/ Study Reports of NGOs working in the same geography", "c": "Data can’t be linked: most information is collected manually or remains undocumented. This data is not openly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g9", "no": 9, "ph": 0, "dm": 2, "q": "Understand conflict and contestation over Commons", "d": "Land dispute and encroachment records, tehsildar/revenue court case records, inter-village boundary disputes\nOther data that could help: NGO mediation case files, village-level conflict logs", "c": "Scattered; held informally in revenue and forest offices. Data can’t be linked: dispute records are not linked to Commons inventories or use data. This data is not openly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g10", "no": 10, "ph": 0, "dm": 2, "q": "Identify governance and institutional arrangements", "d": "Gram Sabha resolutions, Forest Committees, Water User Associations, Biodiversity Management Committees, Village institutions\nOther data that could help: Project/ Study Reports of NGOs working in the same geography", "c": "Rarely digitised; scattered across departments or local records. Data can’t be linked: governance information is largely absent from existing public datasets. This data is not openly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g11", "no": 11, "ph": 0, "dm": 2, "q": "Assess Panchayat's administrative and financial capacity", "d": "PFMS records, own-source revenue, staff strength and vacancy, Panchayat secretary tenure and turnover\nOther data that could help: NGO institutional capacity assessments", "c": "Held within Panchayati Raj department, not consolidated publicly. Data can’t be linked: capacity data is not linked to scheme or investment datasets. This data is not openly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g14", "no": 12, "ph": 0, "dm": 2, "q": "Review previous investments and ongoing schemes", "d": "GPDP, MGNREGA MIS, Jal Jeevan Mission, Watershed programmes, Finance Commission grants", "c": "Five or more different datasets and sources are needed for this one step. Data exists but cannot be easily linked across schemes and programmes. Not all of the data is easy to locate."}, {"id": "g12", "no": 13, "ph": 1, "dm": 0, "q": "Assess climate and rainfall variability affecting the GP", "d": "IMD rainfall trend data, drought frequency records, climate vulnerability indices\nOther data that could help: Research institution climate models, NGO vulnerability assessments", "c": "Hard to link: climate datasets are not linked to livelihood or Commons datasets. Relies on data held by NGOs or communities, outside formal government systems. Available at block level; rarely downscaled to GP."}, {"id": "g13", "no": 14, "ph": 1, "dm": 0, "q": "Analyse climate and disaster risks", "d": "Flood, drought, heat stress, forest fire history and risk maps\nOther data that could help: Disaster risk assessments, NGO resilience studies", "c": "Available in different departments. Hard to link: hazard datasets are not integrated with local planning systems. This data is only partly accessible. Relies on data held by NGOs or communities, outside formal government systems."}, {"id": "g15", "no": 15, "ph": 2, "dm": 2, "q": "Prioritise interventions for the coming year (along with the concerned GP)", "d": "Outputs from Steps 1–6 combined", "c": "Needs manual synthesis of evidence from several sources; the data was built for reporting rather than for making this decision."}, {"id": "g16", "no": 16, "ph": 2, "dm": 2, "q": "Develop the GPDP and align investments with schemes (led by the GP, informed by the NGO)", "d": "Scheme guidelines, GPDP templates, departmental budgets", "c": ""}];
 const PHN=["Understand the status quo","Set goals for the future","Create a plan"];
+const DMN=["Natural resources","People","Institutions"];
+const DMD=["Land, water, forests and the condition of the Commons","Communities, livelihoods and how the Commons are used","Governance, conflicts, finances and schemes"];
 const PHD=["Where do things stand today?","Where do we want to get to?","What will we do, and in what order?"];
 const COLS=["#ffd23f","#5ef2c0","#ff8fb8","#c3b1ff","#ff9f43","#7fd1ff","#b6f23c","#ffffff"];
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const slug=s=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,60)||"x";
-let tab="play",me=null,mode="gp",curPh=0,dirty=false,pw="",ok=false,subs=[],an=null,busy=false,jobErr="",selT=null,selSc="all",openId=null,dt=null;
+let tab="play",me=null,mode="gp",curPh=0,curDm=null,dirty=false,pw="",ok=false,subs=[],an=null,busy=false,jobErr="",selT=null,selSc="all",openId=null,dt=null;
 try{pw=sessionStorage.getItem("pw")||""}catch(e){}
 function toast(t){const e=$("toast");e.textContent=t;e.style.display="block";setTimeout(()=>e.style.display="none",3000)}
 async function api(path,opt={}){
@@ -167,15 +175,15 @@ function drawTabs(){
 
 /* ---------- participant ---------- */
 const touched=s=>!!(s.h.trim()||(s.base?(s.q!==s.base.q||s.d!==s.base.d||s.c!==s.base.c):(s.q.trim()||s.d.trim()||s.c.trim())));
-const payload=()=>({g:me.g,sk:me.sk,sn:me.sn,desc:me.desc,steps:me.steps.map(s=>({gp:s.base?s.id:undefined,ph:s.ph,q:s.q,d:s.d,c:s.c,h:s.h,t:touched(s)}))});
+const payload=()=>({g:me.g,sk:me.sk,sn:me.sn,desc:me.desc,steps:me.steps.map(s=>({gp:s.base?s.id:undefined,ph:s.ph,dm:s.dm,q:s.q,d:s.d,c:s.c,h:s.h,t:touched(s)}))});
 const dkey=()=>"dog-"+slug(me.g)+"-"+me.sk;
-function newGp(){return GP.map(s=>({id:s.id,ph:s.ph,q:s.q,d:s.d,c:s.c,h:"",base:{q:s.q,d:s.d,c:s.c}}))}
+function newGp(){return GP.map(s=>({id:s.id,no:s.no,ph:s.ph,dm:s.dm,q:s.q,d:s.d,c:s.c,h:"",base:{q:s.q,d:s.d,c:s.c}}))}
 function applyStored(st){
   const steps=me.sk==="gpdp"?newGp():[];
   (st||[]).forEach((x,i)=>{
     const b=x.gp&&steps.find(s=>s.id===x.gp);
     if(b){b.q=x.q;b.d=x.d;b.c=x.c;b.h=x.h}
-    else steps.push({id:"x"+Date.now()+"_"+i,ph:x.ph,q:x.q||"",d:x.d||"",c:x.c||"",h:x.h||"",base:null});
+    else steps.push({id:"x"+Date.now()+"_"+i,ph:x.ph,dm:Number.isInteger(x.dm)?x.dm:(x.ph===0&&me.sk==="gpdp"?0:null),q:x.q||"",d:x.d||"",c:x.c||"",h:x.h||"",base:null});
   });
   me.steps=steps;
 }
@@ -195,14 +203,22 @@ $("go").onclick=async()=>{
   if(st)toast("Welcome back. Your earlier answers are loaded.");
   dirty=false;show("s-over");drawOver();drawTabs();
 };
-function show(id){["s-start","s-over","s-phase"].forEach(x=>$(x).classList.toggle("hide",x!==id));window.scrollTo(0,0)}
+function show(id){["s-start","s-over","s-grp","s-phase"].forEach(x=>$(x).classList.toggle("hide",x!==id));window.scrollTo(0,0)}
 function drawOver(){
   $("who").innerHTML=`<b>${esc(me.g)}</b> · ${esc(me.sn)} · <a href="#" id="chg" style="color:var(--acc)">change</a>`;
   $("chg").onclick=e=>{e.preventDefault();if(dirty&&!confirm("You have unsaved changes. Leave anyway?"))return;me=null;show("s-start");drawTabs()};
   $("phs").innerHTML=PHN.map((n,i)=>{const st=me.steps.filter(s=>s.ph===i),f=st.filter(touched).length;
     return`<button class="ph p${i}" data-p="${i}"><div><div class="n">${i+1}</div><div class="t">${n}</div><div>${PHD[i]}</div></div><div style="margin-top:14px;font-weight:600">${st.length} step${st.length===1?"":"s"} · ${f} worked on</div></button>`}).join("");
-  $("phs").querySelectorAll(".ph").forEach(b=>b.onclick=()=>{curPh=+b.dataset.p;drawPhase()});
+  $("phs").querySelectorAll(".ph").forEach(b=>b.onclick=()=>{curPh=+b.dataset.p;if(me.sk==="gpdp"&&curPh===0){drawGroups()}else{curDm=null;drawPhase()}});
 }
+function drawGroups(){
+  curPh=0;curDm=null;$("gtitle").textContent="1. "+PHN[0];
+  $("grps").innerHTML=DMN.map((n,i)=>{const st=me.steps.filter(s=>s.ph===0&&s.dm===i),f=st.filter(touched).length;
+    return`<button class="ph p${[1,0,2][i]}" data-d="${i}"><div><div class="n">${String.fromCharCode(97+i)}</div><div class="t">${n}</div><div>${DMD[i]}</div></div><div style="margin-top:14px;font-weight:600">${st.length} step${st.length===1?"":"s"} · ${f} worked on</div></button>`}).join("");
+  $("grps").querySelectorAll(".ph").forEach(b=>b.onclick=()=>{curDm=+b.dataset.d;drawPhase()});
+  show("s-grp");
+}
+$("gback").onclick=()=>{drawOver();show("s-over")};
 function stepHtml(s,n){
   return`<details class="card step" data-id="${s.id}" ${s.id===openId?"open":""}><summary><span class="num">${n}</span><span class="qt">${esc(s.q||"New step")}</span><span class="tick">${touched(s)?"✓":""}</span></summary><div class="body">
   <label>The question</label><textarea data-k="q" rows="2">${esc(s.q)}</textarea>
@@ -212,9 +228,9 @@ function stepHtml(s,n){
   ${s.base?"":`<p><button class="dng" data-rm="${s.id}">Remove this step</button></p>`}</div></details>`;
 }
 function drawPhase(){
-  $("phtitle").textContent=(curPh+1)+". "+PHN[curPh];
-  const st=me.steps.filter(s=>s.ph===curPh);
-  $("steps").innerHTML=st.length?st.map((s,i)=>stepHtml(s,i+1)).join(""):`<p class="tag">No steps yet. Add the first one below.</p>`;
+  $("phtitle").textContent=(curPh+1)+". "+PHN[curPh]+(curDm!==null?" · "+DMN[curDm]:"");
+  const st=me.steps.filter(s=>s.ph===curPh&&(curDm===null||s.dm===curDm));
+  $("steps").innerHTML=st.length?st.map((s,i)=>stepHtml(s,s.no??(me.sk==="gpdp"?"•":i+1))).join(""):`<p class="tag">No steps yet. Add the first one below.</p>`;
   show("s-phase");
 }
 $("steps").addEventListener("input",e=>{
@@ -231,10 +247,10 @@ $("steps").addEventListener("click",e=>{
   me.steps=me.steps.filter(s=>s.id!==id);dirty=true;$("saved").textContent="Unsaved changes";drawPhase();
 });
 $("addstep").onclick=()=>{
-  const s={id:"x"+Date.now(),ph:curPh,q:"",d:"",c:"",h:"",base:null};me.steps.push(s);openId=s.id;drawPhase();
+  const s={id:"x"+Date.now(),ph:curPh,dm:curDm,q:"",d:"",c:"",h:"",base:null};me.steps.push(s);openId=s.id;drawPhase();
   const t=document.querySelector(`details[data-id="${s.id}"] textarea`);if(t)t.focus();
 };
-$("back").onclick=()=>{drawOver();show("s-over")};
+$("back").onclick=()=>{if(curDm!==null)drawGroups();else{drawOver();show("s-over")}};
 $("save").onclick=async()=>{
   const b=$("save");b.disabled=true;
   try{await api("submit",{method:"POST",body:JSON.stringify(payload())});dirty=false;
