@@ -27,9 +27,10 @@ export default async (req) => {
         gp: s.gp ? clip(s.gp, 10) : undefined,
         ph: [0, 1, 2].includes(Number(s.ph)) ? Number(s.ph) : 0,
         dm: [0, 1, 2].includes(Number(s.dm)) ? Number(s.dm) : null,
-        q: clip(s.q, 2000), d: clip(s.d, 2000), tech: clip(s.tech, 2000), c: clip(s.c, 2000), h: clip(s.h, 3000), t: !!s.t,
+        q: clip(s.q, 2000), d: clip(s.d, 2000), tech: clip(s.tech, 2000), cap: clip(s.cap, 2000), c: clip(s.c, 2000), h: clip(s.h, 3000), t: !!s.t,
       }));
-      await subs.setJSON(slug(g) + "__" + sk, { g, sk, sn, desc: clip(b.desc, 600), steps, ts: Date.now() });
+      const pid = clip(b.pid, 40) || "x", pn = clip(b.pn, 100);
+      await subs.setJSON(slug(g) + "__" + sk + "__" + slug(pid), { g, sk, sn, pid, pn, desc: clip(b.desc, 600), steps, ts: Date.now() });
       return json({ ok: true, ts: Date.now() });
     }
 
@@ -37,7 +38,8 @@ export default async (req) => {
       const g = clip(url.searchParams.get("g"), 80), sn = clip(url.searchParams.get("sn"), 120);
       const isG = url.searchParams.get("sk") === "gpdp";
       if (!g) return json({ submission: null });
-      const d = await subs.get(slug(g) + "__" + scKey(isG ? "gpdp" : "c", sn), { type: "json" });
+      const pid = clip(url.searchParams.get("pid"), 40) || "x";
+      const d = await subs.get(slug(g) + "__" + scKey(isG ? "gpdp" : "c", sn) + "__" + slug(pid), { type: "json" });
       return json({ submission: d || null });
     }
 
