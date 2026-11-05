@@ -18,7 +18,7 @@ export function buildEntries(subs) {
     for (const st of s.steps || []) {
       if (!st.t) continue;
       if (!(st.c || st.h)) continue;
-      entries.push({ i: entries.length + 1, sk: s.sk, sn: s.sn, g: s.g, ph: st.ph, q: cut(st.q, 300), d: cut(st.d, 300), tech: cut(st.tech, 300), c: cut(st.c, 700), h: cut(st.h, 900) });
+      entries.push({ i: entries.length + 1, sk: s.sk, sn: s.sn, pid: s.pid || "", pn: s.pn || "No persona", g: s.g, ph: st.ph, q: cut(st.q, 300), d: cut(st.d, 300), tech: cut(st.tech, 300), cap: cut(st.cap, 300), c: cut(st.c, 700), h: cut(st.h, 900) });
     }
   }
   return entries;
@@ -44,16 +44,16 @@ export async function runAnalysis() {
   if (entries.length < 3) throw new Error("Need more responses first (at least 3 worked-on steps)");
 
   const data = entries
-    .map((e) => `#${e.i} [${e.sn} | ${e.g} | ${PHN[e.ph] || ""}] STEP: ${e.q} | DATA: ${e.d || "-"} | TECHNOLOGY: ${e.tech || "-"} | CHALLENGES: ${e.c || "-"} | HOW ADDRESSED: ${e.h || "(nothing given)"}`)
+    .map((e) => `#${e.i} [${e.sn} | ${e.pn} | ${e.g} | ${PHN[e.ph] || ""}] STEP: ${e.q} | DATA: ${e.d || "-"} | TECHNOLOGY: ${e.tech || "-"} | CAPACITY: ${e.cap || "-"} | CHALLENGES: ${e.c || "-"} | HOW ADDRESSED: ${e.h || "(nothing given)"}`)
     .join("\n");
   const seeds = SEEDS.map((s) => `${s[0]} ${s[1]}: ${s[2]}`).join("\n");
 
-  const prompt = `You are helping a facilitator synthesise what workshop participants said about data challenges in land, water and commons planning in India. Participants worked through scenarios (a pre-filled one about preparing the Annual Gram Panchayat Development Plan, "GPDP", plus scenarios they invented themselves). For each step they wrote the question, the data used, the technology used, the challenges, and how they address the challenges. Each numbered entry below is one step worked on by one group.
+  const prompt = `You are helping a facilitator synthesise what workshop participants said about data challenges in land, water and commons planning in India. Participants worked through scenarios (a pre-filled one about preparing the Annual Gram Panchayat Development Plan, "GPDP", plus scenarios they invented themselves). Each group took on a persona (for example an implementing organisation, a government agency, an advocacy group, a funder, a researcher, or an enabler of landscape stewards) and answered from that seat. For each step they wrote the question, the data used, the technology used, the capacity needed, the challenges, and how they address the challenges. Each numbered entry below is one step worked on by one group.
 
 TASK
 1. Group the CHALLENGES into themes. Start from this taxonomy from earlier research and use a theme when the participants' words fit it:
 ${seeds}
-You may rename a theme in plainer words, merge themes, or add new themes when participants raise challenges that do not fit (give those code null). Drop themes nobody raised. Aim for 6 to 14 themes. One entry can belong to up to 3 themes.
+You may rename a theme in plainer words, merge themes, or add new themes when participants raise challenges that do not fit (give those code null). Drop themes nobody raised. Aim for 6 to 14 themes. One entry can belong to up to 3 themes. Participants were also asked about technology and capacity: if technology gaps or capacity gaps recur, make each its own theme (code null).
 2. For each theme, summarise in one sentence how participants describe it.
 3. For each theme, group the HOW ADDRESSED text into 2 to 5 distinct approaches (what people actually do: workarounds, tools and technology, partnerships, field verification, proxy data, negotiation, and so on). Give each approach a short title and a one or two sentence summary. Only use entries that actually describe an approach. If nobody described a way to handle a theme, return an empty approaches list.
 4. Reference entries only by their number.
@@ -99,5 +99,12 @@ ${data}`;
     s.groups.add(e.g); s.entries++;
   }
   const scenarios = Object.values(scen).map((s) => ({ key: s.key, name: s.name, groups: s.groups.size, entries: s.entries }));
-  return { v: 1, themes, entries, scenarios, n: subs.length, ts: Date.now() };
+  const per = {};
+  for (const e of entries) {
+    const k = e.pid || "none";
+    const p = (per[k] ||= { key: k, name: e.pn, groups: new Set(), entries: 0 });
+    p.groups.add(e.g); p.entries++;
+  }
+  const personas = Object.values(per).map((p) => ({ key: p.key, name: p.name, groups: p.groups.size, entries: p.entries }));
+  return { v: 1, themes, entries, scenarios, personas, n: subs.length, ts: Date.now() };
 }
